@@ -12,7 +12,8 @@ jobs:
     env:
       VM_HOST: ${{ secrets.VM_HOST }} # Hostname or IP stored as a GitHub secret
       DATE: $(date +'%m-%d-%y')
-      BACKUP_FILE: /mongo-data/backups/mongo-backup-$(date +'%m-%d-%y').tar.gz
+      BACKUP_PATH: /mongo-data/backups/mongo-backup-$(date +'%m-%d-%y').tar.gz
+      BACKUP_FILE: mongo-backup-$(date +'%m-%d-%y').tar.gz
       SPACES_URL: ${{ secrets.SPACES_URL }}
 
     steps:
@@ -40,7 +41,7 @@ jobs:
               chmod +x /tmp/backupDB.sh
               bash /tmp/backupDB.sh
               echo "Script Ran Successfully................................."
-              scp -o StrictHostKeyChecking=no -i ${{ secrets.DO_SSH_PRIVATE_KEY }} root@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
+              scp -o StrictHostKeyChecking=no -i ${{ secrets.DO_SSH_PRIVATE_KEY }} root@${{ secrets.VM_HOST }}:$BACKUP_PATH ./$BACKUP_FILE
               echo "copied to runner Successfully..........................."
 
 #      - name: Copy backup from VM to GitHub runner
@@ -59,10 +60,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET_KEY }}
         run: |
-            aws s3 cp ./mongo-backup.tar.gz s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
+            aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
       
       - name: Cleanup local backup
-        run: rm -f ./mongo-backup.tar.gz
+        run: rm -f ./$BACKUP_FILE
       
       - name: Job Completed
         run: echo "Backup workflow completed successfully."
