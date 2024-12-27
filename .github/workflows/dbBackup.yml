@@ -9,6 +9,12 @@ jobs:
   backup:
     runs-on: ubuntu-latest
 
+    env:
+      VM_HOST: ${{ secrets.VM_HOST }} # Hostname or IP stored as a GitHub secret
+      DATE: $(date +'%m-%d-%y')
+      BACKUP_FILE: /mongo-data/backups/mongo-backup-$(date +'%m-%d-%y').tar.gz
+      SPACES_URL: ${{ secrets.SPACES_URL }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +29,7 @@ jobs:
           remote_user: root
           remote_key: ${{ secrets.DO_SSH_PRIVATE_KEY }} 
 
-      - name: Install Nginx and copy local site files
+      - name: Copy Script and run backup 
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VM_HOST }} 
@@ -33,9 +39,24 @@ jobs:
               echo "running script.........................................."  
               chmod +x /tmp/backup_script.sh
               bash /tmp/backupDB.sh
-              
+
+
+              - name: Copy backup from VM to GitHub runner
+              run: |
+                scp -o StrictHostKeyChecking=no rootR@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
+      
+      - name: Install AWS CLI
+        run: sudo apt-get install -y awscli
+      
+      - name: Upload backup to DigitalOcean Spaces
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET_KEY }}
+        run: |
+            aws s3 cp ./mongo-backup.tar.gz s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
+      
+      - name: Cleanup local backup
+        run: rm -f ./mongo-backup.tar.gz
+      
       - name: Job Completed
         run: echo "Backup workflow completed successfully."
-
-
-    
