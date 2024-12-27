@@ -42,6 +42,15 @@ jobs:
               bash /tmp/backupDB.sh
               echo "Script Ran Successfully................................."
 
+      - name: Copy backup from remote server to runner
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: root
+          key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          source: "/mongo-data/backups/mongo-backup-$(date +'%m-%d-%y').tar.gz"
+          target: "./"              
+
       - name: Copy backup from VM to GitHub runner
         run: |
           # Save the private key locally
