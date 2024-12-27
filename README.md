@@ -72,3 +72,4 @@ Database backups are essential to ensure that you can restore your data in case 
 ## Lessons Learned
 
 - Mongo was not installed on host VM as it only runs in the container. I wanted to keep everything container based so am running the mongo commands inside the container.
+- Was trying to do too many steps in one not realizing I was trying to execute one command inside the remote server instead of on the runner as it should have been. Context is key.
