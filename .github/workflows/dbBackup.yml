@@ -51,7 +51,7 @@ jobs:
           # Dynamic date variable
           DATE=$(date +'%m-%d-%y')
           BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
-          LOCAL_FILE="./mongo-backup-$DATE.tar.gz"
+          BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
 
           # Copy Backup from VM
           scp -o StrictHostKeyChecking=no -i private_key root@${{ secrets.VM_HOST }}:$BACKUP_PATH ./$BACKUP_FILE
