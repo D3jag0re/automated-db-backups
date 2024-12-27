@@ -39,11 +39,15 @@ jobs:
               echo "running script.........................................."  
               chmod +x /tmp/backupDB.sh
               bash /tmp/backupDB.sh
+              echo "Script Ran Successfully................................."
+              scp -o StrictHostKeyChecking=no root@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
+              echo "copied to runner Successfully..........................."
 
 
-              - name: Copy backup from VM to GitHub runner
-              run: |
-                scp -o StrictHostKeyChecking=no root@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
+
+#      - name: Copy backup from VM to GitHub runner
+#          script: |
+#            scp -o StrictHostKeyChecking=no root@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
       
       - name: Install AWS CLI
         run: sudo apt-get install -y awscli
