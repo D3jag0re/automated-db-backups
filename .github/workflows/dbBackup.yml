@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
           script: |
               echo "running script.........................................."  
-              chmod +x /tmp/backup_script.sh
+              chmod +x /tmp/backupDB.sh
               bash /tmp/backupDB.sh
 
 
