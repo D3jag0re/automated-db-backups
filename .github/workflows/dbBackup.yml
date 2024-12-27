@@ -44,8 +44,16 @@ jobs:
 
       - name: Copy backup from VM to GitHub runner
         run: |
+          # Save the private key locally
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+
+          # Copy Backup from VM
           scp -o StrictHostKeyChecking=no -i ${{ secrets.DO_SSH_PRIVATE_KEY }} root@${{ secrets.VM_HOST }}:$BACKUP_PATH ./$BACKUP_FILE
           echo "copied to runner Successfully..........................."
+
+          # Cleanup private key
+          rm -f private_key 
       
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
