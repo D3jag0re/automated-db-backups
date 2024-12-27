@@ -48,7 +48,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: root
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
-          source: "/mongo-data/backups/mongo-backup-$(date +'%m-%d-%y').tar.gz"
+          source: "/mongo-data/backups/mongo-backup-12-27-24.tar.gz"
           target: "./"              
 
       - name: Copy backup from VM to GitHub runner
