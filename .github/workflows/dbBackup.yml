@@ -43,7 +43,7 @@ jobs:
 
               - name: Copy backup from VM to GitHub runner
               run: |
-                scp -o StrictHostKeyChecking=no rootR@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
+                scp -o StrictHostKeyChecking=no root@${{ secrets.VM_HOST }}:$BACKUP_FILE ./mongo-backup.tar.gz
       
       - name: Install AWS CLI
         run: sudo apt-get install -y awscli
