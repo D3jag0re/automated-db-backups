@@ -45,7 +45,8 @@ jobs:
       - name: Copy backup from VM to GitHub runner
         run: |
           # Save the private key locally
-          echo "$SSH_PRIVATE_KEY" > private_key
+          echo "${SSH_PRIVATE_KEY//\\n/$'\n'}" > private_key
+          #echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
 
           # Dynamic date variable

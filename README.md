@@ -73,3 +73,5 @@ Database backups are essential to ensure that you can restore your data in case 
 
 - Mongo was not installed on host VM as it only runs in the container. I wanted to keep everything container based so am running the mongo commands inside the container.
 - Was trying to do too many steps in one not realizing I was trying to execute one command inside the remote server instead of on the runner as it should have been. Context is key.
+- in scp, cannot read the key directy from the GitHub secret, so had to pass it through first ... but it also doesnt like the format....
+- scp was treating the variables timecode literally so had to add a command to interpret them when running 
