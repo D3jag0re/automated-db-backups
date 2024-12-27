@@ -40,16 +40,35 @@ Database backups are essential to ensure that you can restore your data in case 
     - DO_SPACES_ACCESS_KEY : Digital Ocean spaces access key (for Terraform state file)
     - DO_SSH_PUBLIC_KEY : Keypair to be used for VM 
     - DO_SSH_PRIVATE_KEY : Keypair to be used for VM
+    - VM_HOST: IP or hostname of VM host
 
 - Will piggyback off of [Multi Container Application](https://github.com/D3jag0re/multi-container-application)
     - While Mongo runs in a container, data is peristed on the host VM
 
+## To Run backup Manually 
+
+- Trigger workflow OR you can:
+    - copy backupDB.sh and restoreDB.sh to host VM
+    - Run 
+
+## To Run backup Automatically 
+
+- Uncomment lines 5 &  6 in dbBackup.yml 
+- Wait
+
+## To Run Restore 
+
+- SSH into host VM:
+    - Pull down desired backup from spaces
+    - unzip
+    - follow manual commands in script 
 
 ## Notes 
 
 - Will be using DO spaces instead of cloudflare since it is already setup across the board
 - Will implement stretch goal
+- Using GHA scheduled workflow instead of cronjob due to key mgmt 
 
 ## Lessons Learned
 
-- Lessons Learned
+- Mongo was not installed on host VM as it only runs in the container. I wanted to keep everything container based so am running the mongo commands inside the container.

@@ -1,0 +1,41 @@
+name: MongoDB Backup to DigitalOcean Spaces
+
+on:
+  workflow_dispatch: # Manual trigger
+  # schedule:
+  #   - cron: '0 */12 * * *' # Uncomment for every 12 hours
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: rsync Scripts
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: ./
+          remote_path: /tmp/
+          remote_host: ${{ secrets.VM_HOST }} 
+          remote_user: root
+          remote_key: ${{ secrets.DO_SSH_PRIVATE_KEY }} 
+
+      - name: Install Nginx and copy local site files
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VM_HOST }} 
+          username: root
+          key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          script: |
+              echo "running script.........................................."  
+              chmod +x /tmp/backup_script.sh
+              bash /tmp/backupDB.sh
+              
+      - name: Job Completed
+        run: echo "Backup workflow completed successfully."
+
+
+    
