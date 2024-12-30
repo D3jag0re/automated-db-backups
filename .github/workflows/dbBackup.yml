@@ -61,19 +61,11 @@ jobs:
           username: root
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
           script: |
-              echo "running script.........................................."  
-              chmod +x /tmp/backupDB.sh
-      
-      - name: Upload backup to DigitalOcean Spaces
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET_KEY }}
-        run: |
-          # Dynamic date variable
-          DATE=$(date +'%m-%d-%y')
-          BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
-          BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
-          aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
+              # Dynamic date variable
+              DATE=$(date +'%m-%d-%y')
+              BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
+              BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
+              aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
       
       #- name: Cleanup local backup
       #  run: rm -f ./$BACKUP_FILE
