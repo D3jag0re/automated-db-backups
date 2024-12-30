@@ -75,3 +75,5 @@ Database backups are essential to ensure that you can restore your data in case 
 - Was trying to do too many steps in one not realizing I was trying to execute one command inside the remote server instead of on the runner as it should have been. Context is key.
 - in scp, cannot read the key directy from the GitHub secret, so had to pass it through first ... but it also doesnt like the format....
 - scp was treating the variables timecode literally so had to add a command to interpret them when running 
+
+- Took a step back and re-thought the process. Made sure S3 tools was installed on remote server and then did the upload through the remote server as well. 
