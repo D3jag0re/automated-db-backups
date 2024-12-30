@@ -21,6 +21,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install AWS CLI For S3
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VM_HOST }} 
+          username: root
+          key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          script: |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+
       - name: rsync Scripts
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -43,52 +54,29 @@ jobs:
               bash /tmp/backupDB.sh
               echo "Script Ran Successfully................................."
 
-######################################################################################################################################
-      - name: Copy backup from remote server to runner
-        uses: appleboy/scp-action@v0.1.4
+      - name: Upload backup to DigitalOcean Spaces
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VM_HOST }}
+          host: ${{ secrets.VM_HOST }} 
           username: root
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
-          source: "/mongo-data/backups/mongo-backup-12-27-24.tar.gz"
-          target: "./"              
-
-      - name: Copy backup from VM to GitHub runner
-        run: |
-          # Save the private key locally
-          echo "${SSH_PRIVATE_KEY//\\n/$'\n'}" > private_key
-          #echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
-
-          # Dynamic date variable
-          DATE=$(date +'%m-%d-%y')
-          BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
-          BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
-
-          # Copy Backup from VM
-          scp -o StrictHostKeyChecking=no -i private_key root@${{ secrets.VM_HOST }}:$BACKUP_PATH ./$BACKUP_FILE
-          echo "copied to runner Successfully..........................."
-
-          # Cleanup private key
-          rm -f private_key 
-
-###############################################################################################################################################
-      - name: Install AWS CLI
-        uses: unfor19/install-aws-cli-action@v1
-        with:
-          version: 2
-          verbose: false
-          arch: amd64
+          script: |
+              echo "running script.........................................."  
+              chmod +x /tmp/backupDB.sh
       
       - name: Upload backup to DigitalOcean Spaces
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET_KEY }}
         run: |
-            aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
+          # Dynamic date variable
+          DATE=$(date +'%m-%d-%y')
+          BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
+          BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
+          aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
       
-      - name: Cleanup local backup
-        run: rm -f ./$BACKUP_FILE
+      #- name: Cleanup local backup
+      #  run: rm -f ./$BACKUP_FILE
       
       - name: Job Completed
         run: echo "Backup workflow completed successfully."
