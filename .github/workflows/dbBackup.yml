@@ -67,7 +67,7 @@ jobs:
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
           script: |
               # Dynamic date variable
-              SPACES_BUCKER="spacebucket3000"
+              SPACES_BUCKET="spacebucket3000"
               DATE=$(date +'%m-%d-%y')
               BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
               BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
