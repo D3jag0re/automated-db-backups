@@ -70,7 +70,7 @@ jobs:
               DATE=$(date +'%m-%d-%y')
               BACKUP_PATH="/mongo-data/backups/mongo-backup-$DATE.tar.gz"
               BACKUP_FILE="./mongo-backup-$DATE.tar.gz"
-              aws s3 cp ./$BACKUP_FILE s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
+              aws s3 cp /$BACKUP_PATH s3://$SPACES_BUCKET/ --endpoint-url ${{ secrets.SPACES_URL }}
       
       #- name: Cleanup local backup
       #  run: rm -f ./$BACKUP_FILE
